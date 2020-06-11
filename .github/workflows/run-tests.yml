@@ -16,7 +16,7 @@ jobs:
     - name: Start mysql
       run: sudo systemctl start mysql.service
     - name: Setup Database
-      run: mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE IF NOT EXISTS gha-test;'
+      run: mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE IF NOT EXISTS `gha-test`;'
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.github-actions', '.env');"
     - name: Install Dependencies
