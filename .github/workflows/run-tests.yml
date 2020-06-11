@@ -11,17 +11,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    services:
-        mysql:
-            image: mysql:5.7
-            env:
-                MYSQL_ALLOW_EMPTY_PASSWORD: yes
-                MYSQL_DATABASE: gha-test
-            ports:
-                - 3306
-
     steps:
     - uses: actions/checkout@v2
+    - name: Start mysql
+      run: sudo systemctl start mysql.service
+    - name: Setup Database
+      run: mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE IF NOT EXISTS gha-test;
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.github-actions', '.env');"
     - name: Install Dependencies
@@ -33,4 +28,4 @@ jobs:
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit
       env:
-        DB_PORT: ${{ job.services.mysql.ports[3306] }}
+        DB_PASSWORD: root
