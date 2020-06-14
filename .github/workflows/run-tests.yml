@@ -13,6 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
     - name: Start mysql
       run: sudo systemctl start mysql.service
     - name: Setup Database
