@@ -8,28 +8,29 @@ on:
 
 jobs:
   laravel-tests:
-
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.2', '7.3', '7.4']
+    
+    name: PHP ${{ matrix.php }} tests
 
     steps:
-    - uses: actions/checkout@v2
-    
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
     - name: Start mysql
       run: sudo systemctl start mysql.service
     - name: Setup Database
       run: mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE IF NOT EXISTS `gha-test`;'
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.github-actions', '.env');"
-    - name: Get Composer Cache Directory
-      id: composer-cache
-      run: |
-        echo "::set-output name=dir::$(composer config cache-files-dir)"
-    - uses: actions/cache@v2
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Generate key
