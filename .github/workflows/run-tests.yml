@@ -23,6 +23,16 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.php }}-composer-
       - name: Start mysql
         run: sudo systemctl start mysql.service
       - name: Setup Database
